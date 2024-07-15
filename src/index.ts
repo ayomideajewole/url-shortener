@@ -3,7 +3,7 @@ require('dotenv').config();
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import startup from './startup/routes';
+import startup from './middleware/routes';
 // import passport from 'passport';
 
 
@@ -16,9 +16,6 @@ if(secret) app.use(session({
     secret
   }));
 
-// Passport middleware
-// app.use(passport.initialize());
-// app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,11 +28,7 @@ app.get("/", function (req, res) {
 });
 
 startup(app);
-  
-// require('./config/passport')(passport);
-require('./startup/prod')(app);
-require('./startup/db')();
-
+require('./db/init')();
   
 const port = process.env.PORT || 6007;
 app.listen(port, () => console.log(`Express is listening at http://localhost:${port}`))

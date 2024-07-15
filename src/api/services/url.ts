@@ -1,13 +1,16 @@
 import { UrlInput, UrlOutput } from "../../db/models/url";
 import * as urlDal from '../../db/dal/url';
-
+import { nanoid } from "nanoid"; 
+import ErrorMiddleware from "../../middleware/error";
 
 export class UrlService{
     constructor(){}
 
-    public async convertUrl(payload:UrlInput): Promise<UrlOutput> {
-        const data = urlDal.create(payload);
-        return data;
+    public async shortenUrl(payload:UrlInput): Promise<string> {
+        const shortUrl = nanoid(10);
+        const data = await urlDal.create({...payload, shortUrl});
+        const fullShortUrl = `${process.env.BASE_URL}/${shortUrl}`;
+        return fullShortUrl;
     }
 
     public async update(payload:UrlInput): Promise<UrlOutput> {
@@ -15,9 +18,12 @@ export class UrlService{
         return data;
     }
 
-    public async findByShortLink(shortUrl:string): Promise<UrlOutput | null> {
-        const data = urlDal.findByShortLink(shortUrl);
-        return data;
+    public async getUrlByShortLink(shortUrl:string): Promise<string> {
+        const data = urlDal.findByShortLink(shortUrl) as unknown as UrlOutput;
+        if(!data){
+            ErrorMiddleware.errorHandler('Url not found!', 404)
+        }
+        return data.longUrl;
     }
 
     public async deleteUrl(id:number): Promise<Boolean> {
