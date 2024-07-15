@@ -5,18 +5,24 @@ export const create = async(payload:UrlInput): Promise<UrlOutput> => {
     return await Url.create(payload);
 }
 
-export const getById = async(id:number): Promise<UrlOutput> => {
+export const findById = async(id:number): Promise<UrlOutput | null> => {
     const url =  await Url.findByPk(id);
-    if(!url){
-        throw new Error('No URL found.');
-    }
     return url;
 }
 
-export const update = async(id:number, payload:Partial<UrlInput>): Promise<UrlOutput> => {
-    const url = await Url.findByPk(id);
-    if(!url){throw new Error('No URL found.');}
-    return await url.update(payload);
+export const findByShortLink = async(shortUrl:string): Promise<UrlOutput | null> => {
+    const url =  await Url.findOne({where: {shortUrl}})
+    return url;
+}
+
+export const update = async(payload:Partial<UrlInput>): Promise<UrlOutput> => {
+    const {id, shortUrl, longUrl} = payload;
+    const [affectedCount, affectedRows] = await Url.update({shortUrl, longUrl}, {
+        where: {id: id},
+        returning: true
+    });
+    return affectedRows[0];
+
 }
 
 export const remove = async(id:number): Promise<boolean> => {
@@ -26,6 +32,6 @@ export const remove = async(id:number): Promise<boolean> => {
     return !!deletedUrlCount;
 }
 
-export const getAll = async(): Promise<UrlOutput[]> => {
+export const findAll = async(): Promise<UrlOutput[]> => {
     return await Url.findAll();
 }
