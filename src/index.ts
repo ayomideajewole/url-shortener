@@ -4,6 +4,7 @@ import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import startup from './middleware/routes';
+import dbInit from './db/init';
 // import passport from 'passport';
 
 
@@ -28,7 +29,7 @@ app.get("/", function (req, res) {
 });
 
 startup(app);
-require('./db/init')();
+dbInit();
   
 const port = process.env.PORT || 6007;
 app.listen(port, () => console.log(`Express is listening at http://localhost:${port}`))

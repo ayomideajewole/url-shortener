@@ -23,7 +23,7 @@ class Url extends Model<UrlAttributes, UrlInput> implements UrlAttributes{
 }
 
 Url.init({
-    id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
+    id: { type: DataTypes.INTEGER, primaryKey: true },
     shortUrl: { type: DataTypes.STRING, allowNull: false },
     longUrl: { type: DataTypes.STRING, allowNull: false },
 }, {
